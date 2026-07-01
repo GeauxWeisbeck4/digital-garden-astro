@@ -20,12 +20,17 @@ import { remarkAdmonitions } from "./src/plugins/remark-admonitions"
 import { expressiveCodeOptions, siteConfig } from './src/site.config';
 
 
+import cloudflare from "@astrojs/cloudflare";
+
+
 // https://astro.build/config
 export default defineConfig({
   site: siteConfig.url,
+
   image: {
     domains: ["webmention.io"]
   },
+
   integrations: [
     expressiveCode(expressiveCodeOptions), 
     alpinejs(), 
@@ -52,19 +57,23 @@ export default defineConfig({
   }), 
   robotsTxt()
   ],
+
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg.js"],
     },
     plugins: [tailwindcss(), rawFonts([".ttf", ".woff"])],
   },
+
   env: {
     schema: {
       WEBMENTION_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       WEBMENTION_URL: envField.string({ context: "client", access: "public", optional: true }),
       WEBMENTION_PINGBACK: envField.string({ context: "client", access: "public", optional: true }),
     },
-  }
+  },
+
+  adapter: cloudflare()
 });
 
 function rawFonts(ext: string[]) {
